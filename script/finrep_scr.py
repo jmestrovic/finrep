@@ -2,7 +2,7 @@ from openpyxl import Workbook, load_workbook
 import xlrd
 import os
 import fnmatch
-
+import re
 
 input_folder = 'input'
 archive_folder = 'archive'
@@ -72,7 +72,7 @@ def eligible_rows(rows):
     r = []
     is_header = True
     for row in rows:
-        if (str(row[0].value).strip().startswith('A)  POTRAŽIVANJA') or(str(row[0].value).strip().startswith('I. POSLOVNI'))):
+        if (str(row[0].value).strip().upper().startswith('A)  POTRAŽIVANJA') or(str(row[0].value).strip().startswith('I. POSLOVNI'))):
             is_header = False
         if (not is_header) and is_data_row(row):
             r.append(row)
@@ -80,7 +80,66 @@ def eligible_rows(rows):
 
 
 def find_company_name(rows):
-    pass
+    '''
+    Traži redak koji sadrži naziv tvrtke, te taj naziv ekstrahira i vraća
+    '''
+    name = ''
+    pattern = '\AOBVEZNIK:*\s*(.*)[\s\t]*\Z'
+    for row in rows:
+        val = (row[0].value).replace('_', ' ').strip().upper()
+        if val.startswith('OBVEZNIK'):
+            try:
+                res = re.search(pattern, val)
+                name = res.groups(1)[0]
+            except AttributeError:
+                pass # not found
+            break
+    return name
+
+
+def int_or_zero(s):
+    '''
+    Ulazni parametar konvertira u integer ukoliko je moguće
+    Ukoliko je riječ o praznom stringu, vraća 0
+    '''
+    s = str(s).strip()
+    return int(s) if s else 0
+
+
+def float_or_zero(s):
+    '''
+    Ulazni parametar konvertira u float ukoliko je moguće
+    Ukoliko je riječ o praznom stringu, vraća 0.0
+    '''
+    s = str(s).strip()
+    return float(s) if s else 0.0
+
+
+def format_number(s):
+    '''
+    Ulazni parametar pretvara u float, dobiveni float konvertira u
+    integer, te na kraju taj integer konvertira u string i vraća 
+    kao izlaz
+    '''
+    return str(int(float_or_zero(s)))
+
+
+def print_company_data(name, val):
+    print(company_name)
+    for v in val:
+        print(v[0][:100].replace('\n', ' ').ljust(100, ' ')
+            , str(int(v[1])).rjust(3, '0')
+            , format_number(v[2]).rjust(12, ' ')
+            , format_number(v[3]).rjust(12, ' '))
+        pass
+        try:
+            pass
+            #print(v[0].value[:100].ljust(100, ' ')
+            #    , str(int(v[1].value)).rjust(3, '0')
+            #    , str(int(v[2].value)).rjust(15, ' ')
+            #    , str(int(v[3].value)).rjust(15, ' '))
+        except:
+            pass
 
 
 input_files = get_all_input_files(input_folder, input_pattern)
@@ -100,23 +159,12 @@ for filename in input_files:
     ws_rdg = wb['RDG']
     worksheets = [ws_bilanca, ws_rdg]
 
+    company_name = find_company_name(ws_bilanca)
+
     for ws in worksheets:
         for row in eligible_rows(ws.rows):
-            print((row[0].value, row[8].value, row[9].value, row[10].value))
+            #print((row[0].value, row[8].value, row[9].value, row[10].value))
             values.append((row[0].value, row[8].value, row[9].value, row[10].value))
 
-    # for v in values:
-    #     #print(v)
-    #     print(v[0][:100].ljust(100, ' ')
-    #         , str(int(v[1])).rjust(3, '0')
-    #         , str(int(v[2])).rjust(15, ' ')
-    #         , str(int(v[3])).rjust(15, ' '))
-    #     pass
-    #     try:
-    #         pass
-    #         #print(v[0].value[:100].ljust(100, ' ')
-    #         #    , str(int(v[1].value)).rjust(3, '0')
-    #         #    , str(int(v[2].value)).rjust(15, ' ')
-    #         #    , str(int(v[3].value)).rjust(15, ' '))
-    #     except:
-    #         pass
+
+    print_company_data(company_name, values)
