@@ -1,0 +1,58 @@
+import django
+django.setup()
+
+import xml_parser
+from .models import *
+
+--
+https://stackoverflow.com/questions/8047204/django-script-to-access-model-objects-without-using-manage-py-shell
+
+
+--
+FOR DJANGO 1.11
+
+Upper solutions did not work, but gave me an error:
+
+django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+
+For me solution from here worked out:
+
+import os
+from django.core.wsgi import get_wsgi_application
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'myapp.settings'
+application = get_wsgi_application()
+
+
+--
+For Django version 1.9 or later you can use this:
+
+import sys
+import os
+import django
+
+sys.path.append('your_project_directory')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'your_project.settings'
+django.setup()
+
+from yourapp.models import your_model
+so you can use object as same django object:
+
+from myapp.models. import Locations
+all_locations = Locations.object.all()
+first_location = Locations.object.get(id=1)
+print first_location.name()
+first_location.save()
+
+--
+You need is importable settings.
+
+import os
+import django
+os.environ["DJANGO_SETTINGS_MODULE"] = 'project.settings'
+django.setup()
+from .models import 
+Another way call your script via the django shell:
+
+python manage.py shell < script.py
+
