@@ -118,7 +118,7 @@ def float_or_zero(s):
 def format_number(s):
     '''
     Ulazni parametar pretvara u float, dobiveni float konvertira u
-    integer, te na kraju taj integer konvertira u string i vraća 
+    integer, te na kraju taj integer konvertira u string i vraća
     kao izlaz
     '''
     return str(int(float_or_zero(s)))
@@ -134,7 +134,7 @@ def print_company_data(name, val):
         pass
         try:
             pass
-            #print(v[0].value[:100].ljust(100, ' ')
+            # print(v[0].value[:100].ljust(100, ' ')
             #    , str(int(v[1].value)).rjust(3, '0')
             #    , str(int(v[2].value)).rjust(15, ' ')
             #    , str(int(v[3].value)).rjust(15, ' '))
@@ -153,7 +153,7 @@ for filename in input_files:
         wb = open_xls_as_xlsx(filename)
     else:
         wb = load_workbook(filename=filename, read_only=True)
-    #print(filename)
+    # print(filename)
 
     ws_bilanca = wb['Bilanca']
     ws_rdg = wb['RDG']
@@ -163,8 +163,7 @@ for filename in input_files:
 
     for ws in worksheets:
         for row in eligible_rows(ws.rows):
-            #print((row[0].value, row[8].value, row[9].value, row[10].value))
+            # print((row[0].value, row[8].value, row[9].value, row[10].value))
             values.append((row[0].value, row[8].value, row[9].value, row[10].value))
-
 
     print_company_data(company_name, values)
