@@ -1,0 +1,24 @@
+2.
+PC HPB - conda environment
+C:...> activate stockan
+
+
+
+2.
+Kod poziva skripte na konzoli javi greška tipa:
+Traceback (most recent call last):
+  File "finrep_django.py", line 190, in <module>
+    print_company_data(company_name, values)
+  File "finrep_django.py", line 154, in print_company_data
+    , format_number(v[3]).rjust(12, ' '))
+  File "C:\apps\Anaconda3\envs\stockan\lib\encodings\cp852.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_map)[0]
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2013' in position 10: character maps to <undefined>
+
+
+Problem je u postavkama konzole (nema veze sa pythonom). Naredbom:
+
+c:> chcp 65001
+
+output code page postavljamo na UTF-8.
+

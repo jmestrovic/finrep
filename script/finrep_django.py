@@ -1,14 +1,44 @@
+# -*- coding: utf-8 -*-
 from openpyxl import Workbook, load_workbook
 import xlrd
 import os
 import fnmatch
 import re
-import django
+import sys
+from django.core.wsgi import get_wsgi_application
 
-input_folder = 'input'
-archive_folder = 'archive'
-error_folder = 'error'
+
+input_subfolder = 'input'
+archive_subfolder = 'archive'
+error_subfolder = 'error'
 input_pattern = '*.xls*'
+django_project_path = '..\\web'
+
+
+# prije promjene radnog foldera (radi Djanga) preuzimam
+# folder u kojemu se nalazi skripta koja se pokreće
+script_folder = os.path.dirname(os.path.realpath(__file__))
+input_folder = os.path.join(script_folder, input_subfolder)
+
+
+# This is so Django knows where to find stuff.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "finrep.settings")
+sys.path.append(django_project_path)
+
+# This is so my local_settings.py gets loaded.
+os.chdir(django_project_path)
+
+# This is so models get loaded.
+application = get_wsgi_application()
+
+
+import web.gfi.models
+
+# After application is initialized, I can import and access models
+import django
+django.setup()
+from django.conf import settings
+import app.models
 
 
 def get_all_input_files(folder, pattern):
@@ -126,7 +156,7 @@ def format_number(s):
 
 
 def print_company_data(name, val):
-    print(company_name)
+    # print(company_name)
     for v in val:
         print(v[0][:100].replace('\n', ' ').ljust(100, ' ')
             , str(int(v[1])).rjust(3, '0')
@@ -142,13 +172,9 @@ def print_company_data(name, val):
         except:
             pass
 
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'c:/work/projects/pr/finrep/web/finrep/settings.py'
-django.setup()
-
-
 input_files = get_all_input_files(input_folder, input_pattern)
 for filename in input_files:
+    print(filename)
     values = []
     import_bilanca_ok = False
     import_rdg_ok = False

@@ -100,4 +100,3 @@ ENV/
 # mypy
 .mypy_cache/
 /script/input/*.xls*
-/upute_win.txt
