@@ -10,9 +10,10 @@ class Companies(models.Model):
 
 
 class ListItems(models.Model):
-    year = models.IntegerField(blank=False)
+    report_name = models.CharField(max_length=250, blank=False)
     title = models.CharField(max_length=250, blank=False)
     stripped_title = models.CharField(max_length=250, blank=False)
+    aop_mark = models.IntegerField(blank=False)
     description = models.TextField(blank=True)
 
 
@@ -22,7 +23,8 @@ class GfiHeaders(models.Model):
     file_name = models.CharField(max_length=250)
     company = models.ForeignKey(Companies, on_delete=models.PROTECT, blank=True, null=True)
     company_name = models.CharField(max_length=250, blank=True)
-    user = models.ForeignKey(get_user_model(), models.PROTECT, blank=False, null=False)
+    user = models.ForeignKey(get_user_model(), models.PROTECT, null=True)
+    year = models.IntegerField(blank=False)
     description = models.TextField(blank=True)
 
 
@@ -31,4 +33,4 @@ class GfiDetails(models.Model):
     item = models.ForeignKey(ListItems, on_delete=models.PROTECT, blank=False, null=False)
     value = models.IntegerField(default=0)
     value_last_year = models.IntegerField(default=0)
-    description = models.TextField(blank=True)    
+    description = models.TextField(blank=True)
