@@ -8,6 +8,9 @@ class Companies(models.Model):
     abbreviation = models.CharField(max_length=10, blank=False)
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class ListItems(models.Model):
     report_name = models.CharField(max_length=250, blank=False)
@@ -15,6 +18,9 @@ class ListItems(models.Model):
     stripped_title = models.CharField(max_length=250, blank=False)
     aop_mark = models.IntegerField(blank=False)
     description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.title
 
 
 class GfiHeaders(models.Model):
@@ -27,6 +33,9 @@ class GfiHeaders(models.Model):
     year = models.IntegerField(blank=False)
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return "{company}, {year}".format(company=self.company.name, year=self.year)
+
 
 class GfiDetails(models.Model):
     header = models.ForeignKey(GfiHeaders, on_delete=models.PROTECT, blank=False, null=False)
@@ -34,3 +43,6 @@ class GfiDetails(models.Model):
     value = models.IntegerField(default=0)
     value_last_year = models.IntegerField(default=0)
     description = models.TextField(blank=True)
+
+    def __str__(self):
+        return "{header}-{detail}".format(header=self.header, detail=self.item.aop_mark)
