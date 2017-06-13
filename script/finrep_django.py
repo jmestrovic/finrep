@@ -339,7 +339,7 @@ for filename in input_files:
         if save_company_data(company_data, values, additional_data) == save_status_ok:
             logging.info("\tSave operation successful")
             logging.info("\tMoving to backup folder")
-            shutil.move(filename, error_folder)
+            shutil.move(filename, archive_folder)
             logging.info("\tFile moved to backup folder")
         else:
             logging.error("\tError occured duting save operation")
