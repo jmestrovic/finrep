@@ -7,6 +7,8 @@ class Companies(models.Model):
     short_name = models.CharField(max_length=50, blank=False)
     abbreviation = models.CharField(max_length=10, blank=False)
     description = models.TextField(blank=True)
+    enlisted_papers = models.CharField(max_length=250, blank=True)
+    city = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.name

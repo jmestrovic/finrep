@@ -4,7 +4,10 @@ from .models import ListItems
 from .models import GfiHeaders
 from .models import GfiDetails
 
-admin.site.register(Companies)
+class CompaniesAdmin(admin.ModelAdmin):
+    list_display = ('abbreviation', 'name',)
+
+admin.site.register(Companies, CompaniesAdmin)
 admin.site.register(ListItems)
 admin.site.register(GfiHeaders)
 admin.site.register(GfiDetails)
