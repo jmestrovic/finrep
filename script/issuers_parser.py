@@ -5,9 +5,11 @@ from urllib.request import urlopen
 from django.core.wsgi import get_wsgi_application
 import logging
 from datetime import datetime
+from urllib.parse import urlparse, parse_qs
+
 
 # dry_run - Set this parameter to False to actually enter data to DB
-dry_run = False
+dry_run = True
 django_project_path = '..\\web'
 
 
@@ -49,15 +51,32 @@ soup = BeautifulSoup(urlopen('http://zse.hr/default.aspx?id=36769'), 'html.parse
 table = soup.find('table', id='dnevna_trgovanja')
 rows = table.find_all('tr')
 issuers_list = []
-for row in rows:
+for row in rows[1:]:
     cols = row.find_all('td')
     cols_stripped = [ele.text.strip() for ele in cols]
+
+    # get short name
+    short_name = cols[0].find('b').text
+    cols_stripped.append(short_name)
+
+    # create dictionary of all stocks/bonds with ZSE cipher
+    links = cols[1].find_all('a', href=True)
+    links_dict = {}
+    for link_full in links:
+        link_name = link_full.contents[0]
+        link = link_full['href']
+        parser_url = urlparse(link)
+        url_params = parse_qs(parser_url.query)
+        link_cipher = url_params['dionica'][0]
+        links_dict[link_name] = link_cipher
+    cols_stripped.append(links_dict)
+
     issuers_list.append(cols_stripped)
 
 
 if dry_run:
-    for idx, issuer in enumerate(issuers_list):
-        print("{: >3}. {}".format(idx, issuer))
+    for idx, issuer in enumerate(issuers_list[1:]):
+        print("{: >3}. {}".format(idx+1, issuer))
 else:
     # logging configuration
     logging.basicConfig(filename='issuers.log', level=logging.DEBUG)
@@ -75,5 +94,5 @@ else:
     # import models
     from gfi.models import *
 
-    for issuer in issuers_list:
+    for issuer in issuers_list[1:]:
         insert_or_update_company(issuer[1], issuer[0], issuer[2])
