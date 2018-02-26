@@ -9,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 
 
 # dry_run - Set this parameter to False to actually enter data to DB
-dry_run = True
+dry_run = False
 django_project_path = '..\\web'
 
 
@@ -25,26 +25,48 @@ def get_company_id(abbrev):
     return id
 
 
-def insert_or_update_company(abbrev, name, city):
-    id = get_company_id(abbrev)
-    if id == -1:
-        logging.info("Abbreviation {0} do not exist. Inserting {0} - {1} - {2}".format(abbrev, name, city))
-        short_name = name[:50]
-        comp = Companies(name=name, short_name=short_name, abbreviation=abbrev, city=city)
-        comp.save()
-        id = comp.id
-    else:
-        logging.info("Abbreviation {0} exists".format(abbrev))
-        comp = Companies.objects.filter(id=id).first()
-        if (comp.abbreviation != abbrev) or (comp.name != name) or (comp.city != city):
-            logging.info("\tUpdating {0} -> {3}, {1} -> {4}, {2} -> {5}".format(comp.abbreviation, comp.name, comp.city, abbrev, name, city))
-            comp.abbreviation = abbrev
-            comp.name = name
-            comp.city = city
-            comp.save()
-        else:
-            logging.info("\tMatching records. No need to update.")
-    return id
+def get_abbrev_from_papers(papers_list):
+    return(list(papers_list.keys())[0])[:4]
+
+
+def create_papers_for_company(company, company_papers_dict):
+    for paper, zse_mark in company_papers_dict.items():
+        security = Securities(company=company, mark=paper, zse_mark=zse_mark, nominal_value=0)
+        security.save()
+
+
+def insert_or_update_company(issuer):
+    logging.info("Adding {0}".format(issuer))
+    comp_name = issuer[0]
+    comp_papers = issuer[1]
+    comp_city = issuer[2]
+    comp_short_name = issuer[3]
+    comp_papers_dict = issuer[4]
+    comp_abbrev = get_abbrev_from_papers(comp_papers_dict)
+
+    comp = Companies(name=comp_name, short_name=comp_short_name, abbreviation=comp_abbrev, city=comp_city, securities_list=comp_papers)
+    comp.save()
+    create_papers_for_company(comp, comp_papers_dict)
+
+    # id = get_company_id(abbrev)
+    # if id == -1:
+    #     logging.info("Abbreviation {0} do not exist. Inserting {0} - {1} - {2}".format(abbrev, name, city))
+    #     short_name = name[:50]
+    #     comp = Companies(name=name, short_name=short_name, abbreviation=abbrev, city=city)
+    #     comp.save()
+    #     id = comp.id
+    # else:
+    #     logging.info("Abbreviation {0} exists".format(abbrev))
+    #     comp = Companies.objects.filter(id=id).first()
+    #     if (comp.abbreviation != abbrev) or (comp.name != name) or (comp.city != city):
+    #         logging.info("\tUpdating {0} -> {3}, {1} -> {4}, {2} -> {5}".format(comp.abbreviation, comp.name, comp.city, abbrev, name, city))
+    #         comp.abbreviation = abbrev
+    #         comp.name = name
+    #         comp.city = city
+    #         comp.save()
+    #     else:
+    #         logging.info("\tMatching records. No need to update.")
+    # return id
 
 
 soup = BeautifulSoup(urlopen('http://zse.hr/default.aspx?id=36769'), 'html.parser')
@@ -95,4 +117,4 @@ else:
     from gfi.models import *
 
     for issuer in issuers_list[1:]:
-        insert_or_update_company(issuer[1], issuer[0], issuer[2])
+        insert_or_update_company(issuer)

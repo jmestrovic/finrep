@@ -7,8 +7,9 @@ class Companies(models.Model):
     short_name = models.CharField(max_length=50, blank=False)
     abbreviation = models.CharField(max_length=10, blank=False)
     description = models.TextField(blank=True)
-    enlisted_papers = models.CharField(max_length=250, blank=True)
+    securities_list = models.CharField(max_length=250, blank=True)
     city = models.CharField(max_length=100, blank=True)
+    zse_mark = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.name
@@ -48,3 +49,28 @@ class GfiDetails(models.Model):
 
     def __str__(self):
         return "{header}-{detail}".format(header=self.header, detail=self.item.aop_mark)
+
+
+class Securities(models.Model):
+    mark = models.CharField(max_length=20, blank=False, null=False)
+    company = models.ForeignKey(Companies, on_delete=models.PROTECT, blank=False, null=False)
+    isin = models.CharField(max_length=50, blank=False, null=False)
+    description = models.TextField(blank=True)
+    issued_number = models.IntegerField(default=0)
+    nominal_value = models.DecimalField(max_digits=12, decimal_places=2)
+    enlistment_date = models.DateTimeField(auto_now_add=True, blank=True)
+    zse_mark = models.CharField(max_length=50, blank=True)
+
+
+class IndicatorTypes(models.Model):
+    mark = models.CharField(max_length=10, blank=False, null=False)
+    name = models.CharField(max_length=250, blank=False, null=False)
+    description = models.TextField(blank=True)
+    formula = models.TextField(blank=True)
+
+
+class Indicators(models.Model):
+    company = models.ForeignKey(Companies, on_delete=models.PROTECT, blank=False, null=False)
+    indicator_type = models.ForeignKey(IndicatorTypes, on_delete=models.PROTECT, blank=False, null=False)
+    value = models.DecimalField(max_digits=5, decimal_places=2)
+    calc_date = models.DateTimeField(auto_now_add=True, blank=True)
