@@ -9,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 
 
 # dry_run - Set this parameter to False to actually enter data to DB
-dry_run = False
+dry_run = True
 django_project_path = '..\\web'
 
 

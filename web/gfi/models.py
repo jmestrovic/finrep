@@ -58,8 +58,10 @@ class Securities(models.Model):
     description = models.TextField(blank=True)
     issued_number = models.IntegerField(default=0)
     nominal_value = models.DecimalField(max_digits=12, decimal_places=2)
+    currency = models.TextField(max_length=10, blank=True, null=True)
     enlistment_date = models.DateTimeField(auto_now_add=True, blank=True)
     zse_mark = models.CharField(max_length=50, blank=True)
+    security_type = models.CharField(max_length=1, blank=True)  # O - obveznica; D - dionica
 
 
 class IndicatorTypes(models.Model):
