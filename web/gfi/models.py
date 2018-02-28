@@ -128,7 +128,7 @@ class SecurityPrices(models.Model):
     date = models.DateTimeField(auto_now_add=False, blank=False)
     security = models.ForeignKey(Securities, on_delete=models.PROTECT, blank=False, null=False, db_index=True)
     last_price = models.DecimalField(max_digits=12, decimal_places=2, blank=False)
-    change_pct = models.DecimalField(max_digits=7, decimal_places=4, blank=True)
+    change_pct = models.CharField(max_length=20, blank=True, null=True)
     open_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     high_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     low_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
@@ -137,7 +137,7 @@ class SecurityPrices(models.Model):
     turnover = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
 
     def __str__(self):
-        return "{security} ({date}): {price}".format(security=self.security, date=self.date, price=self.price)
+        return "{security} ({date}): {last_price}".format(security=self.security, date=self.date, last_price=self.last_price)
 
 
 class SecurityPricesHistory(models.Model):
@@ -145,7 +145,7 @@ class SecurityPricesHistory(models.Model):
     security = models.ForeignKey(Securities, on_delete=models.PROTECT, blank=False, null=False)
     last_price = models.DecimalField(max_digits=12, decimal_places=2, blank=False)
     closing_price = models.DecimalField(max_digits=12, decimal_places=2, blank=False)
-    change_pct = models.DecimalField(max_digits=7, decimal_places=4, blank=True)
+    change_pct = models.CharField(max_length=20, blank=True, null=True)
     open_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     high_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
     low_price = models.DecimalField(max_digits=12, decimal_places=2, blank=True)
@@ -154,7 +154,7 @@ class SecurityPricesHistory(models.Model):
     turnover = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
 
     def __str__(self):
-        return "{security} ({date}): {price}".format(security=self.security, date=self.date, price=self.price)
+        return "{security} ({date}): {last_price}".format(security=self.security, date=self.date, last_price=self.last_price)
 
     class Meta:
         indexes = [
