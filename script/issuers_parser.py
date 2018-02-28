@@ -97,7 +97,7 @@ for row in rows[1:]:
 
 
 if dry_run:
-    for idx, issuer in enumerate(issuers_list[1:]):
+    for idx, issuer in enumerate(issuers_list):
         print("{: >3}. {}".format(idx+1, issuer))
 else:
     # logging configuration
@@ -116,5 +116,5 @@ else:
     # import models
     from gfi.models import *
 
-    for issuer in issuers_list[1:]:
+    for issuer in issuers_list:
         insert_or_update_company(issuer)
